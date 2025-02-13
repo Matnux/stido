@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darbuotojų statistika</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui;
+            margin: 0;
+            padding: 10px;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 1920px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr); /* 8 stulpeliai */
+            gap: 5px;
+            justify-content: center;
+        }
+        .employee-card {
+            background: white;
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+            font-size: 14px;
+        }
+        .employee-card h3 {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .metric {
+            padding: 3px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .positive { background: #e6f6ec; color: #166534; }
+        .negative { background: #fee2e2; color: #991b1b; }
+        .header {
+            text-align: right;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .admin-btn {
+            padding: 5px 15px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <button class="admin-btn" onclick="checkAdmin()">ADMIN</button>
+    </div>
+
+    <div id="employeeList" class="container"></div>
+
+    <script>
+        // Sukuriame 40 darbuotojų
+        const employees = [];
+        for (let i = 1; i <= 40; i++) {
+            employees.push({ id: i, vardas: `Darbuotojas ${i}`, pavarde: `Pavardė ${i}` });
+        }
+
+        // Rodikliai kiekvienam darbuotojui
+        const metricsLabels = ["Atsakomybė", "Komandinis darbas", "Punktualumas", "Kokybė", "Lankstumas"];
+
+        function renderEmployees() {
+            const container = document.getElementById('employeeList');
+            container.innerHTML = '';
+
+            employees.forEach(emp => {
+                const card = document.createElement('div');
+                card.className = 'employee-card';
+                card.innerHTML = `<h3>${emp.vardas} ${emp.pavarde}</h3>`;
+
+                const metricsDiv = document.createElement('div');
+                metricsDiv.className = 'metrics';
+
+                metricsLabels.forEach((label, index) => {
+                    const key = `metric_${emp.id}_${index}`;
+                    let storedValue = localStorage.getItem(key) || "0";
+                    storedValue = parseInt(storedValue);
+
+                    const metricDiv = document.createElement('div');
+                    metricDiv.className = `metric ${storedValue >= 0 ? 'positive' : 'negative'}`;
+                    metricDiv.innerHTML = `${label}: ${storedValue}%`;
+                    metricsDiv.appendChild(metricDiv);
+                });
+
+                card.appendChild(metricsDiv);
+                container.appendChild(card);
+            });
+        }
+
+        // ADMIN funkcija
+        function checkAdmin() {
+            const password = prompt("Įveskite slaptažodį:");
+            if(password === "gaidys") {
+                window.open('admin.html', '_blank');
+            } else {
+                alert("Neteisingas slaptažodis!");
+            }
+        }
+
+        // Atvaizduoti duomenis
+        renderEmployees();
+
+        // Sekti localStorage pakeitimus
+        window.addEventListener('storage', () => {
+            renderEmployees();
+        });
+    </script>
+
+</body>
+</html>

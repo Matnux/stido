@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Darbuotojų Valdymas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui;
+            margin: 0;
+            background: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            padding: 20px;
+        }
+        .admin-container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .employee-list {
+            width: 35%;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: #1f2937;
+            color: white;
+            padding: 20px;
+        }
+        .employee-list h2 {
+            text-align: center;
+            font-size: 20px;
+        }
+        .employee {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+            transition: background 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+        }
+        .employee:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .profile {
+            width: 65%;
+            padding: 30px;
+            text-align: center;
+            display: none;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        .photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #ccc;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+        }
+        .photo input {
+            display: none;
+        }
+        .profile-name input {
+            font-size: 18px;
+            border: none;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+            background: none;
+        }
+        .skills {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .skill {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .squares {
+            display: flex;
+            gap: 5px;
+        }
+        .square {
+            width: 25px;
+            height: 25px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+        .square:hover {
+            transform: scale(1.1);
+        }
+        .square.active-green {
+            background: #4caf50;
+        }
+        .square.active-red {
+            background: #f44336;
+        }
+        .add-btn {
+            margin-top: 20px;
+            padding: 8px 15px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div class="employee-list">
+            <h2>Darbuotojai</h2>
+            <button class="add-btn" onclick="addEmployee()">➕ Pridėti darbuotoją</button>
+            <div id="employeeList"></div>
+        </div>
+
+        <div class="profile" id="profile">
+            <label for="photoUpload">
+                <div class="photo" id="profilePhoto"></div>
+            </label>
+            <input type="file" id="photoUpload" accept="image/*" onchange="uploadPhoto(event)">
+            <div class="profile-name">
+                <input type="text" id="profileFirstName" placeholder="Vardas" oninput="updateName('vardas')">
+                <input type="text" id="profileLastName" placeholder="Pavardė" oninput="updateName('pavarde')">
+            </div>
+            <div class="skills" id="skillsContainer"></div>
+            <button class="add-btn" onclick="addSkill()">➕ Pridėti sugebėjimą</button>
+        </div>
+    </div>
+
+    <script>
+        let employees = JSON.parse(localStorage.getItem("employees")) || [];
+        let currentEmployeeIndex = null;
+
+        function renderEmployeeList() {
+            localStorage.setItem("employees", JSON.stringify(employees));
+            const list = document.getElementById("employeeList");
+            list.innerHTML = "";
+
+            employees.forEach((emp, index) => {
+                const div = document.createElement("div");
+                div.className = "employee";
+                div.innerHTML = `
+                    <span onclick="openProfile(${index})">${emp.vardas} ${emp.pavarde}</span>
+                    <button class="delete-btn" onclick="deleteEmployee(${index})">🗑️</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function openProfile(index) {
+            currentEmployeeIndex = index;
+            const emp = employees[index];
+            document.getElementById("profile").style.display = "block";
+            document.getElementById("profileFirstName").value = emp.vardas;
+            document.getElementById("profileLastName").value = emp.pavarde;
+            document.getElementById("profilePhoto").style.backgroundImage = emp.photo ? `url('${emp.photo}')` : "url('https://via.placeholder.com/100')";
+
+            const skillsContainer = document.getElementById("skillsContainer");
+            skillsContainer.innerHTML = "";
+
+            emp.skills.forEach(skill => {
+                const skillDiv = document.createElement("div");
+                skillDiv.className = "skill";
+                skillDiv.innerHTML = `<span>${skill}</span>`;
+                skillsContainer.appendChild(skillDiv);
+            });
+        }
+
+        function updateName(type) {
+            if (currentEmployeeIndex !== null) {
+                employees[currentEmployeeIndex][type] = document.getElementById(type === "vardas" ? "profileFirstName" : "profileLastName").value;
+                renderEmployeeList();
+            }
+        }
+
+        function addEmployee() {
+            employees.push({ vardas: "Naujas", pavarde: "Darbuotojas", skills: ["Naujas sugebėjimas"], photo: "" });
+            renderEmployeeList();
+        }
+
+        function deleteEmployee(index) {
+            employees.splice(index, 1);
+            renderEmployeeList();
+            document.getElementById("profile").style.display = "none";
+        }
+
+        function addSkill() {
+            if (currentEmployeeIndex !== null) {
+                employees[currentEmployeeIndex].skills.push("Naujas sugebėjimas");
+                openProfile(currentEmployeeIndex);
+            }
+        }
+
+        function uploadPhoto(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                employees[currentEmployeeIndex].photo = e.target.result;
+                localStorage.setItem("employees", JSON.stringify(employees));
+                document.getElementById("profilePhoto").style.backgroundImage = `url('${e.target.result}')`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        renderEmployeeList();
+    </script>
+
+</body>
+</html>
