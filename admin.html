@@ -1,236 +1,375 @@
 <!DOCTYPE html>
 <html lang="lt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Darbuotojų Valdymas</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', system-ui;
-            margin: 0;
-            background: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
-            padding: 20px;
-        }
-        .admin-container {
-            display: flex;
-            width: 100%;
-            max-width: 1400px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .employee-list {
-            width: 35%;
-            max-height: 80vh;
-            overflow-y: auto;
-            background: #1f2937;
-            color: white;
-            padding: 20px;
-        }
-        .employee-list h2 {
-            text-align: center;
-            font-size: 20px;
-        }
-        .employee {
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 16px;
-            transition: background 0.3s ease;
-            display: flex;
-            justify-content: space-between;
-        }
-        .employee:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .delete-btn {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .profile {
-            width: 65%;
-            padding: 30px;
-            text-align: center;
-            display: none;
-            overflow-y: auto;
-            max-height: 80vh;
-        }
-        .photo {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: #ccc;
-            background-size: cover;
-            background-position: center;
-            cursor: pointer;
-        }
-        .photo input {
-            display: none;
-        }
-        .profile-name input {
-            font-size: 18px;
-            border: none;
-            text-align: center;
-            width: 100%;
-            font-weight: bold;
-            background: none;
-        }
-        .skills {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .skill {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: #f9fafb;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        .squares {
-            display: flex;
-            gap: 5px;
-        }
-        .square {
-            width: 25px;
-            height: 25px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.1s ease;
-        }
-        .square:hover {
-            transform: scale(1.1);
-        }
-        .square.active-green {
-            background: #4caf50;
-        }
-        .square.active-red {
-            background: #f44336;
-        }
-        .add-btn {
-            margin-top: 20px;
-            padding: 8px 15px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Darbuotojų Valdymas</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .admin-container {
+      display: flex;
+      width: 100%;
+      max-width: 1400px;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    /* Darbuotojų sąrašo skiltis */
+    .employee-list {
+      width: 45%;
+      background: #1f2937;
+      color: #fff;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .employee-list h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      border-bottom: 2px solid rgba(255,255,255,0.3);
+      padding-bottom: 10px;
+    }
+    .employee {
+      padding: 12px 8px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .employee:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .delete-btn {
+      background: #f44336;
+      border: none;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .add-btn {
+      width: 100%;
+      padding: 12px;
+      background: #3b82f6;
+      border: none;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 20px;
+      transition: background 0.3s ease;
+    }
+    .add-btn:hover {
+      background: #2563eb;
+    }
+    /* Darbuotojo profilio skiltis */
+    .profile {
+      width: 55%;
+      padding: 40px;
+      background: #fafafa;
+      overflow-y: auto;
+      text-align: center;
+    }
+    .photo-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    .photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #ccc;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #ddd;
+      cursor: pointer;
+    }
+    .delete-photo-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #f44336;
+      border: none;
+      color: #fff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      display: none;
+      font-size: 16px;
+      line-height: 24px;
+    }
+    .photo-container:hover .delete-photo-btn {
+      display: block;
+    }
+    .profile-name input {
+      width: 80%;
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin: 8px 0;
+      text-align: center;
+    }
+    .skills {
+      margin-top: 30px;
+    }
+    .skill {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .skill .skill-container {
+      display: flex;
+      flex: 1;
+      align-items: center;
+    }
+    .skill .skill-label {
+      flex: 1;
+    }
+    .skill .skill-label input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      outline: none;
+    }
+    .skill .squares {
+      flex: 1;
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+    .skill .skill-delete {
+      flex: 0;
+      margin-left: 10px;
+    }
+    .skill .skill-delete button {
+      background: #f44336;
+      border: none;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .square {
+      width: 30px;
+      height: 30px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.1s ease;
+    }
+    .square:hover {
+      transform: scale(1.1);
+    }
+    .square.active-green {
+      background: #4caf50;
+    }
+    .square.active-red {
+      background: #f44336;
+    }
+  </style>
 </head>
-<body>
-
-    <div class="admin-container">
-        <div class="employee-list">
-            <h2>Darbuotojai</h2>
-            <button class="add-btn" onclick="addEmployee()">➕ Pridėti darbuotoją</button>
-            <div id="employeeList"></div>
-        </div>
-
-        <div class="profile" id="profile">
-            <label for="photoUpload">
-                <div class="photo" id="profilePhoto"></div>
-            </label>
-            <input type="file" id="photoUpload" accept="image/*" onchange="uploadPhoto(event)">
-            <div class="profile-name">
-                <input type="text" id="profileFirstName" placeholder="Vardas" oninput="updateName('vardas')">
-                <input type="text" id="profileLastName" placeholder="Pavardė" oninput="updateName('pavarde')">
-            </div>
-            <div class="skills" id="skillsContainer"></div>
-            <button class="add-btn" onclick="addSkill()">➕ Pridėti sugebėjimą</button>
-        </div>
+<body onload="checkAccess()">
+  <div class="admin-container">
+    <!-- Kairioji skiltis: Darbuotojų sąrašas -->
+    <div class="employee-list">
+      <h2>Darbuotojai</h2>
+      <button class="add-btn" onclick="addEmployee()">➕ Pridėti darbuotoją</button>
+      <div id="employeeList"></div>
     </div>
-
-    <script>
-        let employees = JSON.parse(localStorage.getItem("employees")) || [];
-        let currentEmployeeIndex = null;
-
-        function renderEmployeeList() {
-            localStorage.setItem("employees", JSON.stringify(employees));
-            const list = document.getElementById("employeeList");
-            list.innerHTML = "";
-
-            employees.forEach((emp, index) => {
-                const div = document.createElement("div");
-                div.className = "employee";
-                div.innerHTML = `
-                    <span onclick="openProfile(${index})">${emp.vardas} ${emp.pavarde}</span>
-                    <button class="delete-btn" onclick="deleteEmployee(${index})">🗑️</button>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function openProfile(index) {
-            currentEmployeeIndex = index;
-            const emp = employees[index];
-            document.getElementById("profile").style.display = "block";
-            document.getElementById("profileFirstName").value = emp.vardas;
-            document.getElementById("profileLastName").value = emp.pavarde;
-            document.getElementById("profilePhoto").style.backgroundImage = emp.photo ? `url('${emp.photo}')` : "url('https://via.placeholder.com/100')";
-
-            const skillsContainer = document.getElementById("skillsContainer");
-            skillsContainer.innerHTML = "";
-
-            emp.skills.forEach(skill => {
-                const skillDiv = document.createElement("div");
-                skillDiv.className = "skill";
-                skillDiv.innerHTML = `<span>${skill}</span>`;
-                skillsContainer.appendChild(skillDiv);
-            });
-        }
-
-        function updateName(type) {
-            if (currentEmployeeIndex !== null) {
-                employees[currentEmployeeIndex][type] = document.getElementById(type === "vardas" ? "profileFirstName" : "profileLastName").value;
-                renderEmployeeList();
+    <!-- Dešinioji skiltis: Darbuotojo profilis -->
+    <div class="profile" id="profile">
+      <div class="photo-container">
+        <label for="photoUpload">
+          <div class="photo" id="profilePhoto"></div>
+        </label>
+        <button class="delete-photo-btn" onclick="deletePhoto()">✖</button>
+      </div>
+      <input type="file" id="photoUpload" accept="image/*" onchange="uploadPhoto(event)" style="display:none;">
+      <div class="profile-name">
+        <input type="text" id="profileFirstName" placeholder="Vardas" oninput="updateName('vardas')">
+        <input type="text" id="profileLastName" placeholder="Pavardė" oninput="updateName('pavarde')">
+      </div>
+      <div class="skills" id="skillsContainer"></div>
+      <button class="add-btn" onclick="addSkill()">➕ Pridėti sugebėjimą</button>
+    </div>
+  </div>
+  <script>
+    function checkAccess() {
+      if (localStorage.getItem("isAdmin") !== "true") {
+        window.location.href = "home.html";
+      }
+    }
+    
+    let employees = JSON.parse(localStorage.getItem("employees")) || [];
+    let currentEmployeeIndex = null;
+    
+    function renderEmployeeList() {
+      localStorage.setItem("employees", JSON.stringify(employees));
+      const list = document.getElementById("employeeList");
+      list.innerHTML = "";
+      employees.forEach((emp, index) => {
+        const div = document.createElement("div");
+        div.className = "employee";
+        div.innerHTML = `<span onclick="openProfile(${index})">${emp.vardas} ${emp.pavarde}</span>
+          <button class="delete-btn" onclick="deleteEmployee(${index})">🗑️</button>`;
+        list.appendChild(div);
+      });
+      localStorage.setItem("updateTime", Date.now());
+      window.dispatchEvent(new Event("storage"));
+    }
+    
+    function openProfile(index) {
+      currentEmployeeIndex = index;
+      const emp = employees[index];
+      document.getElementById("profile").style.display = "block";
+      document.getElementById("profileFirstName").value = emp.vardas;
+      document.getElementById("profileLastName").value = emp.pavarde;
+      document.getElementById("profilePhoto").style.backgroundImage = emp.photo ? `url('${emp.photo}')` : "url('https://via.placeholder.com/120')";
+      
+      const skillsContainer = document.getElementById("skillsContainer");
+      skillsContainer.innerHTML = "";
+      emp.skills.forEach((skill, skillIndex) => {
+        const skillDiv = document.createElement("div");
+        skillDiv.className = "skill";
+        skillDiv.innerHTML = `
+          <div class="skill-container">
+            <div class="skill-label">
+              <input type="text" value="${skill}" onchange="updateSkillName(${index}, ${skillIndex}, this.value)" placeholder="Naujas sugebėjimas">
+            </div>
+            <div class="squares"></div>
+          </div>
+          <div class="skill-delete">
+            <button class="delete-btn" onclick="deleteSkill(${index}, ${skillIndex})">🗑️</button>
+          </div>`;
+        const squaresDiv = skillDiv.querySelector(".squares");
+        for (let i = 0; i < 5; i++) {
+          const square = document.createElement("div");
+          square.className = "square";
+          square.dataset.skillIndex = skillIndex;
+          square.dataset.index = i;
+          const key = `metric_${index}_${skillIndex}_${i}`;
+          let storedStatus = localStorage.getItem(key) || "none";
+          if (storedStatus === "green") {
+            square.classList.add("active-green");
+          } else if (storedStatus === "red") {
+            square.classList.add("active-red");
+          }
+          square.onclick = function () {
+            if (this.classList.contains("active-green")) {
+              this.classList.remove("active-green");
+              this.classList.add("active-red");
+              localStorage.setItem(key, "red");
+            } else if (this.classList.contains("active-red")) {
+              this.classList.remove("active-red");
+              localStorage.setItem(key, "none");
+            } else {
+              this.classList.add("active-green");
+              localStorage.setItem(key, "green");
             }
+            localStorage.setItem("updateTime", Date.now());
+            window.dispatchEvent(new Event("storage"));
+          };
+          squaresDiv.appendChild(square);
         }
-
-        function addEmployee() {
-            employees.push({ vardas: "Naujas", pavarde: "Darbuotojas", skills: ["Naujas sugebėjimas"], photo: "" });
-            renderEmployeeList();
-        }
-
-        function deleteEmployee(index) {
-            employees.splice(index, 1);
-            renderEmployeeList();
-            document.getElementById("profile").style.display = "none";
-        }
-
-        function addSkill() {
-            if (currentEmployeeIndex !== null) {
-                employees[currentEmployeeIndex].skills.push("Naujas sugebėjimas");
-                openProfile(currentEmployeeIndex);
-            }
-        }
-
-        function uploadPhoto(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                employees[currentEmployeeIndex].photo = e.target.result;
-                localStorage.setItem("employees", JSON.stringify(employees));
-                document.getElementById("profilePhoto").style.backgroundImage = `url('${e.target.result}')`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        renderEmployeeList();
-    </script>
-
+        skillsContainer.appendChild(skillDiv);
+      });
+      localStorage.setItem("employees", JSON.stringify(employees));
+      localStorage.setItem("updateTime", Date.now());
+      window.dispatchEvent(new Event("storage"));
+    }
+    
+    function updateName(type) {
+      employees[currentEmployeeIndex][type] = document.getElementById(type === "vardas" ? "profileFirstName" : "profileLastName").value;
+      renderEmployeeList();
+      localStorage.setItem("employees", JSON.stringify(employees));
+      localStorage.setItem("updateTime", Date.now());
+      window.dispatchEvent(new Event("storage"));
+    }
+    
+    function updateSkillName(empIndex, skillIndex, value) {
+      employees[empIndex].skills[skillIndex] = value;
+      localStorage.setItem("employees", JSON.stringify(employees));
+      localStorage.setItem("updateTime", Date.now());
+      window.dispatchEvent(new Event("storage"));
+    }
+    
+    function addEmployee() {
+      employees.push({ id: employees.length + 1, vardas: "Naujas", pavarde: "Darbuotojas", skills: [], photo: "" });
+      renderEmployeeList();
+    }
+    
+    function deleteEmployee(index) {
+      employees.splice(index, 1);
+      renderEmployeeList();
+      document.getElementById("profile").style.display = "none";
+      localStorage.setItem("updateTime", Date.now());
+      window.dispatchEvent(new Event("storage"));
+    }
+    
+    function addSkill() {
+      if (currentEmployeeIndex !== null) {
+        employees[currentEmployeeIndex].skills.push("Naujas sugebėjimas");
+        openProfile(currentEmployeeIndex);
+        localStorage.setItem("updateTime", Date.now());
+        window.dispatchEvent(new Event("storage"));
+      }
+    }
+    
+    function deleteSkill(empIndex, skillIndex) {
+      employees[empIndex].skills.splice(skillIndex, 1);
+      openProfile(empIndex);
+      localStorage.setItem("updateTime", Date.now());
+      window.dispatchEvent(new Event("storage"));
+    }
+    
+    function uploadPhoto(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        employees[currentEmployeeIndex].photo = e.target.result;
+        localStorage.setItem("employees", JSON.stringify(employees));
+        document.getElementById("profilePhoto").style.backgroundImage = `url('${e.target.result}')`;
+        localStorage.setItem("updateTime", Date.now());
+        window.dispatchEvent(new Event("storage"));
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function deletePhoto() {
+      employees[currentEmployeeIndex].photo = "";
+      localStorage.setItem("employees", JSON.stringify(employees));
+      document.getElementById("profilePhoto").style.backgroundImage = "url('https://via.placeholder.com/120')";
+      localStorage.setItem("updateTime", Date.now());
+      window.dispatchEvent(new Event("storage"));
+    }
+    
+    renderEmployeeList();
+  </script>
 </body>
 </html>

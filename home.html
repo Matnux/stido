@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darbuotojų statistika</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui;
+      margin: 0;
+      padding: 20px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .header {
+      width: 100%;
+      text-align: right;
+      margin-bottom: 20px;
+    }
+    .admin-btn {
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    .employee-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 15px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .employee-header {
+      display: flex;
+      align-items: center;
+    }
+    .employee-photo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+    }
+    .employee-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+    .metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .metric {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 3px 5px;
+      border-radius: 4px;
+    }
+    .positive {
+      background: #e6f6ec;
+      color: #166534;
+    }
+    .negative {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top:50%;
+      left:50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      text-align: center;
+      z-index: 1000;
+    }
+    .modal input {
+      padding: 8px;
+      margin-top: 10px;
+      width: 200px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .modal button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="admin-btn" onclick="showPasswordModal()">ADMIN</button>
+  </div>
+
+  <div id="employeeList" class="container"></div>
+
+  <div id="passwordModal" class="modal">
+    <h3>Įveskite slaptažodį:</h3>
+    <input type="password" id="passwordInput" placeholder="Slaptažodis">
+    <br>
+    <button onclick="checkPassword()">OK</button>
+  </div>
+
+  <script>
+    function showPasswordModal() {
+      document.getElementById("passwordModal").style.display = "block";
+    }
+    function checkPassword() {
+      const password = document.getElementById("passwordInput").value;
+      if (password === "gaidys") {
+        localStorage.setItem("isAdmin", "true");
+        window.open("admin.html", "_blank");
+        document.getElementById("passwordModal").style.display = "none";
+      } else {
+        alert("Neteisingas slaptažodis!");
+      }
+    }
+    function renderEmployees() {
+      const employees = JSON.parse(localStorage.getItem("employees")) || [];
+      const container = document.getElementById("employeeList");
+      container.innerHTML = "";
+      employees.forEach((emp, index) => {
+        const card = document.createElement("div");
+        card.className = "employee-card";
+        // Employee header su nuotrauka ir vardu
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "employee-header";
+        const photo = document.createElement("img");
+        photo.className = "employee-photo";
+        photo.src = emp.photo ? emp.photo : "https://via.placeholder.com/40";
+        headerDiv.appendChild(photo);
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "employee-name";
+        nameDiv.innerText = `${emp.vardas} ${emp.pavarde}`;
+        headerDiv.appendChild(nameDiv);
+        card.appendChild(headerDiv);
+        // Sugebėjimų metrikos
+        const metricsDiv = document.createElement("div");
+        metricsDiv.className = "metrics";
+        emp.skills.forEach((skill, skillIndex) => {
+          let score = 0;
+          for (let i = 0; i < 5; i++) {
+            const key = `metric_${index}_${skillIndex}_${i}`;
+            const status = localStorage.getItem(key);
+            if (status === "green") score += 20;
+            else if (status === "red") score -= 20;
+          }
+          const metricDiv = document.createElement("div");
+          metricDiv.className = "metric " + (score >= 0 ? "positive" : "negative");
+          metricDiv.innerText = `${skill}: ${score}%`;
+          metricsDiv.appendChild(metricDiv);
+        });
+        card.appendChild(metricsDiv);
+        container.appendChild(card);
+      });
+    }
+    window.addEventListener("storage", renderEmployees);
+    setInterval(renderEmployees, 1000);
+    renderEmployees();
+  </script>
+</body>
+</html>
